@@ -1,7 +1,26 @@
+import org.gradle.api.tasks.compile.JavaCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 allprojects {
     repositories {
         google()
         mavenCentral()
+    }
+}
+
+// Ensure Java and Kotlin compilation use Java 11 (prevents Gradle from using -source/-target 8)
+subprojects {
+    // Configure Java compile tasks to use source/target compatibility 11
+    tasks.withType<JavaCompile>().configureEach {
+        sourceCompatibility = JavaVersion.VERSION_11.toString()
+        targetCompatibility = JavaVersion.VERSION_11.toString()
+        // Suppress warnings about obsolete -source/-target options coming from dependencies
+        options.compilerArgs.add("-Xlint:-options")
+    }
+
+    // Ensure Kotlin compilation targets JVM 11 as well
+    tasks.withType<KotlinCompile>().configureEach {
+        kotlinOptions.jvmTarget = "11"
     }
 }
 
